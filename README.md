@@ -1,0 +1,44 @@
+# Backup-Information
+
+FTP:
+ssh arda@10.239.47.211
+abcd1234
+/var/ftpd/ftpusers/zoo/analytics-zoo-model
+
+export ANALYTICS_ZOO_ROOT=/home/xinqi/project
+export ANALYTICS_ZOO_HOME=$ANALYTICS_ZOO_ROOT/dist
+export ANALYTICS_ZOO_PY_ZIP=${ANALYTICS_ZOO_HOME}/lib/analytics-zoo-0.2.0-SNAPSHOT-python-api.zip
+export ANALYTICS_ZOO_JAR=${ANALYTICS_ZOO_HOME}/lib/analytics-zoo-0.2.0-SNAPSHOT-jar-with-dependencies.jar
+export ANALYTICS_ZOO_CONF=${ANALYTICS_ZOO_HOME}/conf/spark-analytics-zoo.conf
+export PYTHONPATH=${ANALYTICS_ZOO_PY_ZIP}:$PYTHONPATH
+
+PATH=$SPARK_HOME/bin:$SPARK_HOME/sbin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$SCALA_HOME/bin:$JAVA_HOME/bin:$JAVA_HOME/jre/bin:$PATH  
+export SPARK_HOME=/opt/spark-2.0.1-bin-hadoop2.6
+
+export master=Valinor-Node-09
+
+if [ ! -d analytics-zoo-tensorflow-models ]
+then
+    mkdir analytics-zoo-tensorflow-models
+    mkdir -p analytics-zoo-tensorflow-models/mnist
+    mkdir -p analytics-zoo-tensorflow-models/az_lenet
+    mkdir -p analytics-zoo-tensorflow-models/lenet
+fi
+
+sed "s%/tmp%analytics-zoo-tensorflow-models%g;s%models/slim%slim%g"
+if [ -d analytics-zoo-tensorflow-models/slim ]
+then
+    echo "analytics-zoo-tensorflow-models/slim already exists."
+else
+    echo "Downloading research/slim"
+   
+    wget $FTP_URI/analytics-zoo-tensorflow-models/models/research/slim.tar.gz -P analytics-zoo-tensorflow-models
+    tar -zxvf analytics-zoo-tensorflow-models/slim.tar.gz -C analytics-zoo-tensorflow-models
+   
+    echo "Finished downloading research/slim"
+fi
+pythonpath:
+export PYTHONPATH=`pwd`/analytics-zoo-tensorflow-models/slim:$PYTHONPATH
+
+jupyter notebook:
+jupyter notebook --notebook-dir=./ --ip=* --no-browser 
